@@ -4,24 +4,24 @@ from scrapy.exceptions import CloseSpider
 
 BASE_URL = 'https://www.clippersync.com'
 
+
 class ClipItem(scrapy.Item):
-    # define the fields for your item here like:
     date = scrapy.Field()
     note = scrapy.Field()
 
 
 class ClippersyncSpider(scrapy.Spider):
     @classmethod
-    def get_credentials(cls):
+    def spider_details(cls):
         for item in SPIDER_SETTINGS:
             if item['spider'] == cls.__name__:
-                return {'email':item['email'], 'password': item['password']}
+                return item
 
     name = 'clippersync'
     start_urls = [BASE_URL]
 
     def parse(self, response):
-        credentials = self.get_credentials()
+        credentials = self.spider_details()
         yield scrapy.FormRequest.from_response(
             response,
             formxpath='//*[@id="login"]/div/div/form',
@@ -53,7 +53,6 @@ class ClippersyncSpider(scrapy.Spider):
                 item['date'] = time_stamp
                 item['note'] = note_text
                 yield item
-                return
 
     def extended_notes(self, response):
         time_stamp = response.meta.get('time_stamp')
