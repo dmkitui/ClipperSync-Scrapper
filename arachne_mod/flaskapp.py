@@ -2,9 +2,8 @@ import os
 import sys
 from flask import Flask
 from scrapy import version_info as SCRAPY_VERSION
-
-from arachne.exceptions import SettingsException
-from arachne.endpoints import list_spiders_endpoint, run_spider_endpoint
+from arachne_mod.exceptions import SettingsException
+from arachne_mod.endpoints import list_spiders_endpoint, run_spider_endpoint
 
 class Arachne(Flask):
 
@@ -49,7 +48,7 @@ class Arachne(Flask):
         """Default settings are loaded first and then overwritten from
         personal `settings.py` file
         """
-        self.config.from_object('arachne.default_settings')
+        self.config.from_object('arachne_mod.default_settings')
 
         if isinstance(self.settings, dict):
             self.config.update(self.settings)

@@ -1,1 +1,1 @@
-from arachne.flaskapp import Arachne
+from arachne_mod.flaskapp import Arachne
