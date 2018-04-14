@@ -1,5 +1,9 @@
 from flask import current_app as app, jsonify, abort, request
 from arachne_mod.scrapy_utils import start_crawler
+from models import ClipperData, db_connect, create_clipperdata_table
+from sqlalchemy import desc
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.serializer import loads, dumps
 
 
 def list_spiders_endpoint():
@@ -28,3 +32,22 @@ def run_spider_endpoint(spider_name):
             start_crawler(spider_loc, app.config, item.get('scrapy_settings'))
             return jsonify(home=request.url_root, status='running', spider_name=spider_name)
     return abort(404)
+
+
+def fetch_data(spider_name):
+    """
+    Endpoint to enable access to the scraped data
+    :param spider_name: name of spider to fetch data
+    :return: a json wiht the data
+    """
+    engine = db_connect()
+    create_clipperdata_table(engine)
+    session = sessionmaker(bind=engine)()
+    # session = Session()
+    data = session.query(ClipperData).order_by(desc('date')).all()
+    session.close()
+
+    raw_data = [d.__dict__ for d in data]
+    output = [{'id':x['id'], 'date': x['date'], 'note': x['note']} for x in raw_data]
+
+    return jsonify(message='what....', data=output), 200
