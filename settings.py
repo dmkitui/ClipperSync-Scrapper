@@ -13,7 +13,7 @@ SPIDER_SETTINGS = [
             'port': '5432',
             'username': 'cybertron',
             'password': 'root',
-            'database': 'clipper_data'
+            'database': 'clipper_raw_data'
         },
         'scrapy_settings': {
             'ITEM_PIPELINES': {
