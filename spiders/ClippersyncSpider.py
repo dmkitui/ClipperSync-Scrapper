@@ -40,7 +40,7 @@ class ClippersyncSpider(scrapy.Spider):
 
         clippings = response.selector.xpath('//*[@id="clippings"]/div[*]/div')
         for clip in clippings:
-            time_stamp = clip.xpath('.//div[3]/span/text()').extract_first()  #  //*[@id="clippings"]/div[6]/div/div[3]
+            time_stamp = clip.xpath('.//div[3]/span/text()').extract_first()
             note = clip.xpath('.//div[2]/a')
             note_text = note.xpath('text()').extract_first()
             if note_text is None:
