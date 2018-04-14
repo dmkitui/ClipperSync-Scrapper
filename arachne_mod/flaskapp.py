@@ -3,7 +3,7 @@ import sys
 from flask import Flask
 from scrapy import version_info as SCRAPY_VERSION
 from arachne_mod.exceptions import SettingsException
-from arachne_mod.endpoints import list_spiders_endpoint, run_spider_endpoint
+from arachne_mod.endpoints import list_spiders_endpoint, run_spider_endpoint, fetch_data
 
 class Arachne(Flask):
 
@@ -93,6 +93,7 @@ class Arachne(Flask):
         that are available in the API
         """
         self.add_url_rule('/run-spider/<spider_name>', view_func=run_spider_endpoint)
+        self.add_url_rule('/fetch-data/<spider_name>', view_func=fetch_data)
         self.add_url_rule('/', view_func=list_spiders_endpoint)
 
 
