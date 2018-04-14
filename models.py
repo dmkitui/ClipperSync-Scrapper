@@ -5,7 +5,6 @@ from sqlalchemy.ext.declarative import declarative_base
 from spiders.ClippersyncSpider import ClippersyncSpider
 
 DATABASE_SETTINGS = ClippersyncSpider.spider_details()['database']
-print('DB SETS: ', DATABASE_SETTINGS)
 DeclarativeBase = declarative_base()
 
 
