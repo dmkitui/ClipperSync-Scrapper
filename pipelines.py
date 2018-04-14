@@ -1,4 +1,5 @@
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.exc import IntegrityError
 from models import ClipperData, db_connect, create_clipperdata_table
 
 
@@ -16,7 +17,11 @@ class AddTablePipeline(object):
         return item
 
     def close_spider(self, spider):
-        self.session.add_all(self.raw_data)
-        self.session.commit()
+        for item in self.raw_data:
+            try:
+                self.session.add(item)
+                self.session.commit()
+            except IntegrityError:
+                self.session.rollback()
         self.session.close()
 
