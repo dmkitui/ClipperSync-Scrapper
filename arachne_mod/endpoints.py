@@ -43,7 +43,6 @@ def fetch_data(spider_name):
     engine = db_connect()
     create_clipperdata_table(engine)
     session = sessionmaker(bind=engine)()
-    # session = Session()
     data = session.query(ClipperData).order_by(desc('date')).all()
     session.close()
 
@@ -51,3 +50,9 @@ def fetch_data(spider_name):
     output = [{'id':x['id'], 'date': x['date'], 'note': x['note']} for x in raw_data]
 
     return jsonify(message='what....', data=output), 200
+
+
+def edit_note(spider_name, note_id):
+    print('Editing ongoing...')
+
+    return jsonify(message='Successful...')
