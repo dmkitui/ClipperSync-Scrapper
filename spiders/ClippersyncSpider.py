@@ -53,7 +53,6 @@ class ClippersyncSpider(scrapy.Spider):
                 item['date'] = time_stamp
                 item['note'] = note_text
                 yield item
-                return
 
     @staticmethod
     def extended_notes(response):
