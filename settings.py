@@ -13,13 +13,12 @@ SPIDER_SETTINGS = [
             'port': '5432',
             'username': 'cybertron',
             'password': 'root',
-            'database': 'clipper_raw_data'
+            'database': os.environ.get('CLIPPER_DB_NAME') # 'clipper_raw_data'
         },
         'scrapy_settings': {
             'ITEM_PIPELINES': {
                 'pipelines.AddTablePipeline': 500
-            },
-            'USER_AGENT': 'Alphadog'
+            }
         }
     }
 ]

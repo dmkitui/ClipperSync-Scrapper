@@ -54,7 +54,8 @@ class ClippersyncSpider(scrapy.Spider):
                 item['note'] = note_text
                 yield item
 
-    def extended_notes(self, response):
+    @staticmethod
+    def extended_notes(response):
         time_stamp = response.meta.get('time_stamp')
         note = response.selector.xpath('//*[@id="clipping-box"]/div[2]/div[2]/text()').extract_first()
         note = note.strip('\n\t\t\t\t\t')
