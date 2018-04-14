@@ -2,7 +2,7 @@
 TELNETCONSOLE_PORT = None
 
 # Crawl responsibly
-USER_AGENT = "Arachne (+http://github.com/kirankoduru/arachne)"
+USER_AGENT = "ClipperSync /0.0 (+https://github.com/dmkitui/ClipperSync-Scrapper)"
 
 # Export data to JSON or CSV
 EXPORT_PATH = 'exports/'
