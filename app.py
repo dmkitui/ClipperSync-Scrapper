@@ -1,7 +1,7 @@
 from twisted.web.wsgi import WSGIResource
 from twisted.web.server import Site
 from twisted.internet import reactor
-from arachne import Arachne
+from arachne_mod import Arachne
 
 app = Arachne(__name__)
 
