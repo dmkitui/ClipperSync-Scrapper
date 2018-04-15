@@ -48,7 +48,7 @@ def fetch_data(spider_name):
 
     output = database_operations.fetch_data()
 
-    return jsonify(message='what....', data=output), 200
+    return jsonify(message='Fetch Successful...', data=output), 200
 
 
 def edit_note(spider_name, note_id):
@@ -71,8 +71,8 @@ def edit_note(spider_name, note_id):
         return jsonify(message='No Edits submitted')
 
     result, status_code = database_operations.edit_note(note_id, edited_note)
-    print('Current Result: ', result)
-    if result is not None:
+
+    if isinstance(result, str):
         return jsonify(message=result), status_code
 
-    return jsonify(message='Successful...')
+    return jsonify(message='Edit Successful'), 201
