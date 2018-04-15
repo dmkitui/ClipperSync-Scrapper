@@ -12,7 +12,7 @@ class AddTablePipeline(object):
         self.raw_data = []
 
     def process_item(self, item, spider):
-        new_item = ClipperData(date=item['date'], note=item['note'])
+        new_item = ClipperData(date=item['date'], raw_note=item['raw_note'])
         self.raw_data.append(new_item)
         return item
 
