@@ -1,3 +1,5 @@
+import json
+from arachne_mod import database_operations
 from flask import current_app as app, jsonify, abort, request
 from arachne_mod.scrapy_utils import start_crawler
 from models import ClipperData, db_connect, create_clipperdata_table
@@ -40,19 +42,37 @@ def fetch_data(spider_name):
     :param spider_name: name of spider to fetch data
     :return: a json wiht the data
     """
-    engine = db_connect()
-    create_clipperdata_table(engine)
-    session = sessionmaker(bind=engine)()
-    data = session.query(ClipperData).order_by(desc('date')).all()
-    session.close()
+    for item in app.config['SPIDER_SETTINGS']:
+        if spider_name not in item['endpoint']:
+            return jsonify(message='Invalid spider specified')
 
-    raw_data = [d.__dict__ for d in data]
-    output = [{'id':x['id'], 'date': x['date'], 'note': x['note']} for x in raw_data]
+    output = database_operations.fetch_data()
 
     return jsonify(message='what....', data=output), 200
 
 
 def edit_note(spider_name, note_id):
-    print('Editing ongoing...')
+
+    request_data = json.loads(request.data.decode('utf-8'))
+    print('Request body: ', request_data)
+
+    for item in app.config['SPIDER_SETTINGS']:
+        if spider_name not in item['endpoint']:
+            return jsonify(message='Invalid spider specified')
+
+    try:
+        note_id = int(note_id)
+    except Exception as e:
+        return jsonify(message='Note ID should be an integer'), 400
+
+    try:
+        edited_note =request_data['edited_note']
+    except IndexError:
+        return jsonify(message='No Edits submitted')
+
+    result, status_code = database_operations.edit_note(note_id, edited_note)
+    print('Current Result: ', result)
+    if result is not None:
+        return jsonify(message=result), status_code
 
     return jsonify(message='Successful...')
