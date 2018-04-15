@@ -20,9 +20,6 @@ USER_AGENT_CHOICES = [
 def get_useragent():
     return random.choice(USER_AGENT_CHOICES)
 
-# Crawling responsibly by randomly setting user agent
-USER_AGENT = get_useragent()  # "ClipperSync /0.0 (+https://github.com/dmkitui/ClipperSync-Scrapper)"
-
 # Export data to JSON or CSV
 EXPORT_PATH = 'exports/'
 EXPORT_JSON = False
@@ -38,4 +35,4 @@ DEBUG = True
 COOKIES_ENABLED = False
 
 # common settings for each spider
-SCRAPY_SETTINGS = {'ITEM_PIPELINES': {}}
+SCRAPY_SETTINGS = {'ITEM_PIPELINES': {}, 'USER_AGENT': get_useragent()}
