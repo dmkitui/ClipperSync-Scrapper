@@ -1,6 +1,6 @@
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
-from models import ClipperData, db_connect, create_clipperdata_table
+from app.models import ClipperData, db_connect, create_clipperdata_table
 
 
 class AddTablePipeline(object):
@@ -9,19 +9,19 @@ class AddTablePipeline(object):
         create_clipperdata_table(engine)
         self.Session = sessionmaker(bind=engine)
         self.session = self.Session()
+        self.raw_data = []
 
     def process_item(self, item, spider):
-        new_item = ClipperData(date=item['date'], note=item['note'])
-        try:
-            self.session.add(new_item)
-            self.session.commit()
-        except IntegrityError:
-            self.session.rollback()
-            return item
-        finally:
-            pass
+        new_item = ClipperData(date=item['date'], raw_note=item['raw_note'])
+        self.raw_data.append(new_item)
         return item
 
     def close_spider(self, spider):
+        for item in self.raw_data:
+            try:
+                self.session.add(item)
+                self.session.commit()
+            except IntegrityError:
+                self.session.rollback()
         self.session.close()
 

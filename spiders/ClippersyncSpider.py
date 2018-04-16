@@ -1,5 +1,5 @@
 import scrapy
-from settings import SPIDER_SETTINGS
+from app.settings import SPIDER_SETTINGS
 from scrapy.exceptions import CloseSpider
 
 BASE_URL = 'https://www.clippersync.com'
@@ -7,7 +7,7 @@ BASE_URL = 'https://www.clippersync.com'
 
 class ClipItem(scrapy.Item):
     date = scrapy.Field()
-    note = scrapy.Field()
+    raw_note = scrapy.Field()
 
 
 class ClippersyncSpider(scrapy.Spider):
@@ -51,15 +51,16 @@ class ClippersyncSpider(scrapy.Spider):
             else:
                 item = ClipItem()
                 item['date'] = time_stamp
-                item['note'] = note_text
+                item['raw_note'] = note_text
                 yield item
 
-    def extended_notes(self, response):
+    @staticmethod
+    def extended_notes(response):
         time_stamp = response.meta.get('time_stamp')
         note = response.selector.xpath('//*[@id="clipping-box"]/div[2]/div[2]/text()').extract_first()
         note = note.strip('\n\t\t\t\t\t')
         item = ClipItem()
         item['date'] = time_stamp
-        item['note'] = note
+        item['raw_note'] = note
 
         yield item
