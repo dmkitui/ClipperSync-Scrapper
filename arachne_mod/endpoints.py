@@ -2,10 +2,6 @@ import json
 from arachne_mod import database_operations
 from flask import current_app as app, jsonify, abort, request
 from arachne_mod.scrapy_utils import start_crawler
-from models import ClipperData, db_connect, create_clipperdata_table
-from sqlalchemy import desc
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.serializer import loads, dumps
 
 
 def list_spiders_endpoint():

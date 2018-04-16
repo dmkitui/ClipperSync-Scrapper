@@ -8,7 +8,7 @@ from arachne_mod.endpoints import list_spiders_endpoint, run_spider_endpoint, fe
 class Arachne(Flask):
 
     def __init__(self, import_name=__package__,
-                 settings='settings.py', **kwargs):
+                 settings='app/settings.py', **kwargs):
         """Initialize the flask app with the settings variable. Load config
         from the settings variable and test if the all the
         directories(for exports & logs) exists. Finally bind the endpoints for

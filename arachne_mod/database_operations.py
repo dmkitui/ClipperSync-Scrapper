@@ -1,4 +1,4 @@
-from models import ClipperData, db_connect, create_clipperdata_table, ClipperDataSchema
+from app.models import ClipperData, db_connect, create_clipperdata_table, ClipperDataSchema
 from sqlalchemy import desc
 from sqlalchemy.orm import sessionmaker
 
