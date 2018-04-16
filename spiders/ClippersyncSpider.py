@@ -7,7 +7,7 @@ BASE_URL = 'https://www.clippersync.com'
 
 class ClipItem(scrapy.Item):
     date = scrapy.Field()
-    note = scrapy.Field()
+    raw_note = scrapy.Field()
 
 
 class ClippersyncSpider(scrapy.Spider):
@@ -51,7 +51,7 @@ class ClippersyncSpider(scrapy.Spider):
             else:
                 item = ClipItem()
                 item['date'] = time_stamp
-                item['note'] = note_text
+                item['raw_note'] = note_text
                 yield item
 
     @staticmethod
@@ -61,6 +61,6 @@ class ClippersyncSpider(scrapy.Spider):
         note = note.strip('\n\t\t\t\t\t')
         item = ClipItem()
         item['date'] = time_stamp
-        item['note'] = note
+        item['raw_note'] = note
 
         yield item
