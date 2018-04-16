@@ -1,5 +1,5 @@
 import scrapy
-from settings import SPIDER_SETTINGS
+from app.settings import SPIDER_SETTINGS
 from scrapy.exceptions import CloseSpider
 
 BASE_URL = 'https://www.clippersync.com'

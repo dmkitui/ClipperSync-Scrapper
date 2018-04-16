@@ -17,7 +17,7 @@ SPIDER_SETTINGS = [
         },
         'scrapy_settings': {
             'ITEM_PIPELINES': {
-                'pipelines.AddTablePipeline': 500
+                'app.pipelines.AddTablePipeline': 500
             }
         }
     }

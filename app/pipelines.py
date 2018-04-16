@@ -1,6 +1,6 @@
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
-from models import ClipperData, db_connect, create_clipperdata_table
+from app.models import ClipperData, db_connect, create_clipperdata_table
 
 
 class AddTablePipeline(object):
