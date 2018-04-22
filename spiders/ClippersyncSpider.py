@@ -1,6 +1,7 @@
 import scrapy
 from app.settings import SPIDER_SETTINGS
 from scrapy.exceptions import CloseSpider
+from scrapy.utils.markup import remove_tags, replace_entities
 
 BASE_URL = 'https://www.clippersync.com'
 
@@ -42,15 +43,13 @@ class ClippersyncSpider(scrapy.Spider):
         for clip in clippings:
             time_stamp = clip.xpath('.//div[3]/span/text()').extract_first()
             note = clip.xpath('.//div[2]/a')
-            note_text = note.xpath('text()').extract()
 
-            if len(note_text) == 0:
+            if len(note) == 0:
                 continue
 
-            if len(note_text) > 1:
-                note_text = ' '.join(note_text)
-            else:
-                note_text = note_text[0]
+            note_text = note.extract_first()
+            note_text = remove_tags(note_text)
+            note_text = replace_entities(note_text)
 
             if note_text.endswith('...'):
                 note_url = note.xpath('@href').extract_first()
@@ -64,13 +63,10 @@ class ClippersyncSpider(scrapy.Spider):
     @staticmethod
     def extended_notes(response):
         time_stamp = response.meta.get('time_stamp')
-        note = response.selector.xpath('//*[@id="clipping-box"]/div[2]/div[2]/text()').extract()
+        note = response.selector.xpath('//*[@id="clipping-box"]/div[2]/div[2]').extract_first()
 
-        if len(note) > 0:
-            note = ' '.join(note)
-        else:
-            note = note[0]
-
+        note = remove_tags(note)
+        note = replace_entities(note)
         note = note.strip('\n\t\t\t\t\t')
         item = ClipItem()
         item['date'] = time_stamp
