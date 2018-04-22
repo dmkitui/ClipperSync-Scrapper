@@ -42,9 +42,16 @@ class ClippersyncSpider(scrapy.Spider):
         for clip in clippings:
             time_stamp = clip.xpath('.//div[3]/span/text()').extract_first()
             note = clip.xpath('.//div[2]/a')
-            note_text = note.xpath('text()').extract_first()
-            if note_text is None:
+            note_text = note.xpath('text()').extract()
+
+            if len(note_text) == 0:
                 continue
+
+            if len(note_text) > 1:
+                note_text = ' '.join(note_text)
+            else:
+                note_text = note_text[0]
+
             if note_text.endswith('...'):
                 note_url = note.xpath('@href').extract_first()
                 yield scrapy.Request(BASE_URL + note_url, callback=self.extended_notes, meta={'time_stamp': time_stamp})
@@ -57,7 +64,13 @@ class ClippersyncSpider(scrapy.Spider):
     @staticmethod
     def extended_notes(response):
         time_stamp = response.meta.get('time_stamp')
-        note = response.selector.xpath('//*[@id="clipping-box"]/div[2]/div[2]/text()').extract_first()
+        note = response.selector.xpath('//*[@id="clipping-box"]/div[2]/div[2]/text()').extract()
+
+        if len(note) > 0:
+            note = ' '.join(note)
+        else:
+            note = note[0]
+
         note = note.strip('\n\t\t\t\t\t')
         item = ClipItem()
         item['date'] = time_stamp
