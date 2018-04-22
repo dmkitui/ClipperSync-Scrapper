@@ -50,7 +50,6 @@ def fetch_data(spider_name):
 def edit_note(spider_name, note_id):
 
     request_data = json.loads(request.data.decode('utf-8'))
-    print('Request body: ', request_data)
 
     for item in app.config['SPIDER_SETTINGS']:
         if spider_name not in item['endpoint']:
@@ -72,3 +71,24 @@ def edit_note(spider_name, note_id):
         return jsonify(message=result), status_code
 
     return jsonify(message='Edit Successful'), 201
+
+
+def delete_note_endpoint(spider_name, note_id):
+
+    request_data = json.loads(request.data.decode('utf-8'))
+    for item in app.config['SPIDER_SETTINGS']:
+        if spider_name not in item['endpoint']:
+            return jsonify(message='Invalid spider specified')
+
+    try:
+        note_id = int(note_id)
+    except Exception as e:
+        return jsonify(message='Note ID should be an integer'), 400
+
+    result, status_code = database_operations.delete_note(note_id)
+
+    if isinstance(result, str):
+        return jsonify(message=result), status_code
+
+    return jsonify(message='Edit Successful'), 201
+

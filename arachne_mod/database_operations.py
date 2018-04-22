@@ -12,12 +12,12 @@ data_schema = ClipperDataSchema()
 def fetch_data():
     raw_data = session.query(ClipperData).order_by(desc('date')).all()
     session.close()
-    json_output = data_schema.dump(raw_data, many=True)
+    visible_notes = [note for note in raw_data if note.visible == True]
+    json_output = data_schema.dump(visible_notes, many=True)
     return json_output
 
 
 def edit_note(note_id, edited_note):
-    print('Edit note ID: ', note_id)
 
     note = session.query(ClipperData).filter_by(id=note_id).first()
     if not note:
@@ -35,3 +35,19 @@ def edit_note(note_id, edited_note):
     session.close()
 
     return True, 201
+
+
+def delete_note(note_id):
+    note = session.query(ClipperData).filter_by(id=note_id).first()
+    if not note:
+        return 'Specified note does not exist', 404
+
+    note_to_delete = data_schema.dump(note).data
+
+    if note_to_delete['visible']:
+        note.visible = False
+        session.commit()
+        session.close()
+        return True, 200
+
+    return 'Note already deleted', 400
