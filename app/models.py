@@ -32,6 +32,7 @@ class ClipperData(DeclarativeBase):
     edit_flag = Column(Boolean, default=False)
     edited_note = Column(Text, nullable=True)
     hash = Column(String, unique=True, default=note_hash)
+    visible = Column(Boolean, default=True)
 
     def __init__(self, id=None, date=None, raw_note=None):
         self.id = id
@@ -51,3 +52,4 @@ class ClipperDataSchema(Schema):
     raw_note = fields.Str()
     edit_flag = fields.Boolean()
     edited_note = fields.Str()
+    visible = fields.Boolean()
