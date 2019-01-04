@@ -1,10 +1,6 @@
-import mongoengine
 import logging
 import pymongo
-import json
 from scrapy.exceptions import CloseSpider
-from mongoengine import *
-from app.models import ClipperItem
 import pprint
 
 pp = pprint.PrettyPrinter(indent=4)
@@ -12,13 +8,11 @@ pp = pprint.PrettyPrinter(indent=4)
 
 def write_error_handler(errors):
     # pp.pprint(errors)
-    # print('No of errors: ', len(errors))
+    print('No of errors: ', len(errors))
     for error in errors:
-        # print('ERROR CODE: ', error['code'])
-        if 'E11000' not in error['errmsg']:
+        if error['code'] != 11000:
             print(error)
             print('Errors as above...')
-
 
 
 class AddTablePipeline(object):
@@ -49,12 +43,10 @@ class AddTablePipeline(object):
             self.client = pymongo.MongoClient(self.mongo_uri)
             self.db = self.client[self.mongo_db]
             self.items = self.db[self.collection_name]
-            # self.items.create_index([('raw_note', pymongo.TEXT)], unique=True, background=True)
         except Exception as e:
             raise CloseSpider(e)
 
     def process_item(self, item, spider):
-        # new_item = ClipperItem(date=item['date'], raw_note=item['raw_note'])
         self.raw_data.append(dict(item))
         return item
 
