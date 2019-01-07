@@ -19,10 +19,11 @@ def fetch_data(spider_name, url='/<spider_name>/fetch-data', methods=['GET']):
     client = pymongo.MongoClient(db_settings['MONGO_URI'])
     db = client[db_settings['MONGO_DB']]
     items = db[db_settings['COLLECTION_NAME']]
-    cursor_object = items.find({}, {'_id': 0}).sort('date', pymongo.DESCENDING)
+    cursor_object = items.find({}).sort('date', pymongo.DESCENDING)
 
     results = []
     for result in cursor_object:
+        result.update({'_id': str(result['_id'])})
         results.append(result)
 
     return jsonify(message=results), 200
