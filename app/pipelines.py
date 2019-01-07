@@ -31,7 +31,7 @@ class AddTablePipeline(object):
         db_settings = crawler.spider.spider_settings['database']
         return cls(
             mongo_uri=db_settings['MONGO_URI'],
-            mongo_db=db_settings['MONGO_DB_NAME'],
+            mongo_db=db_settings['MONGO_DB'],
             collection_name=db_settings['COLLECTION_NAME']
         )
 

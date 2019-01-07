@@ -1,5 +1,6 @@
 from mongoengine import *
 
+
 class ClipperItem(Document):
 
     date = DateTimeField()
