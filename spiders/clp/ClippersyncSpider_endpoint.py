@@ -1,5 +1,9 @@
 import pymongo
+from flask import request
 from flask import current_app as app, jsonify
+
+
+# TODO Add Cache
 
 
 def fetch_data(spider_name, url='/<spider_name>/fetch-data', methods=['GET']):
@@ -13,7 +17,7 @@ def fetch_data(spider_name, url='/<spider_name>/fetch-data', methods=['GET']):
         return jsonify(message='The specified spider does not exist')
 
     client = pymongo.MongoClient(db_settings['MONGO_URI'])
-    db = client[db_settings['MONGO_DB_NAME']]
+    db = client[db_settings['MONGO_DB']]
     items = db[db_settings['COLLECTION_NAME']]
     cursor_object = items.find({}, {'_id': 0}).sort('date', pymongo.DESCENDING)
 
@@ -21,12 +25,22 @@ def fetch_data(spider_name, url='/<spider_name>/fetch-data', methods=['GET']):
     for result in cursor_object:
         results.append(result)
 
-    print('Qnty: ', len(results))
     return jsonify(message=results), 200
 
 
-def search(spider_name, search_params, url='/<spider_name>/search/<search_params>', methods=['GET']):
+def search(spider_name, url='/<spider_name>/search/', methods=['GET']):
+    """
+    Endpoint to perform search on the db.
+    :param spider_name: Name of the spider to run
+    :param url: URL of the endpoint. It should a search parameter in the format ?q=
+    :param methods: GET
+    :return: items matching the search parameters
+    """
     db_settings = {}
+    search_terms = request.args.get('q', '')
+
+    print('Search Params: ', search_terms)
+
     for spider in app.config['SPIDER_SETTINGS']:
         if spider_name == spider['endpoint']:
             db_settings = spider['database']
@@ -36,13 +50,12 @@ def search(spider_name, search_params, url='/<spider_name>/search/<search_params
         return jsonify(message='The specified spider does not exist')
 
     client = pymongo.MongoClient(db_settings['MONGO_URI'])
-    db = client[db_settings['MONGO_DB_NAME']]
+    db = client[db_settings['MONGO_DB']]
     items = db[db_settings['COLLECTION_NAME']]
-    cursor_object = items.find({'$text': {'$search': search_params}}, {'_id': 0}).sort('date')
+    cursor_object = items.find({'$text': {'$search': search_terms}}, {'_id': 0}).sort('date')
 
     results = []
     for result in cursor_object:
         results.append(result)
-    print('Qnty: ', len(results))
 
     return jsonify(message=results), 200
