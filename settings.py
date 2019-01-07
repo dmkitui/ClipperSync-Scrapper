@@ -10,8 +10,8 @@ SPIDER_SETTINGS = [
         'password': os.environ.get('CLIPPER_PASSWORD'),
         'database': {
             'MONGO_URI': os.environ.get('MONGO_URI'),
-            'MONGO_DB_NAME': os.environ.get('MONGO_DB_NAME'),
-            'COLLECTION_NAME': os.environ.get('MONGO_ITEMS')
+            'MONGO_DB': os.environ.get('MONGO_DB'),
+            'COLLECTION_NAME': os.environ.get('COLLECTION_NAME')
         },
         'scrapy_settings': {
             'ITEM_PIPELINES': {
