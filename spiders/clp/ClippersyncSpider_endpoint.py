@@ -53,10 +53,11 @@ def search(spider_name, url='/<spider_name>/search/', methods=['GET']):
     client = pymongo.MongoClient(db_settings['MONGO_URI'])
     db = client[db_settings['MONGO_DB']]
     items = db[db_settings['COLLECTION_NAME']]
-    cursor_object = items.find({'$text': {'$search': search_terms}}, {'_id': 0}).sort('date')
+    cursor_object = items.find({'$text': {'$search': search_terms}}).sort('date')
 
     results = []
     for result in cursor_object:
+        result.update({'_id': str(result['_id'])})
         results.append(result)
 
     return jsonify(message=results), 200
