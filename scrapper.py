@@ -3,7 +3,7 @@ from twisted.web.server import Site
 from twisted.internet import reactor
 
 from arachneserver import ArachneServer
-# from arachneserverTest import ArachneServer
+
 app = ArachneServer(__name__)
 
 resource = WSGIResource(reactor, reactor.getThreadPool(), app)
