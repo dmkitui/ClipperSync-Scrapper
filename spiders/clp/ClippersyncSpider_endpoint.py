@@ -7,6 +7,13 @@ from flask import current_app as app, jsonify
 
 
 def fetch_data(spider_name, url='/<spider_name>/fetch-data', methods=['GET']):
+    """
+    Endpoint to fetch all data from db
+    :param spider_name: name of the spider
+    :param url: URL of the endpoint.
+    :param methods: GET.
+    :return: all items
+    """
     db_settings = {}
     for spider in app.config['SPIDER_SETTINGS']:
         if spider_name == spider['endpoint']:
@@ -31,16 +38,14 @@ def fetch_data(spider_name, url='/<spider_name>/fetch-data', methods=['GET']):
 
 def search(spider_name, url='/<spider_name>/search/', methods=['GET']):
     """
-    Endpoint to perform search on the db.
+    Endpoint to perform search.
     :param spider_name: Name of the spider to run
-    :param url: URL of the endpoint. It should a search parameter in the format ?q=
+    :param url: URL of the endpoint. It should have a search parameter in the format ?q=
     :param methods: GET
     :return: items matching the search parameters
     """
     db_settings = {}
     search_terms = request.args.get('q', '')
-
-    print('Search Params: ', search_terms)
 
     for spider in app.config['SPIDER_SETTINGS']:
         if spider_name == spider['endpoint']:
