@@ -7,12 +7,13 @@ pp = pprint.PrettyPrinter(indent=4)
 
 
 def write_error_handler(errors):
-    # pp.pprint(errors)
-    print('No of errors: ', len(errors))
-    for error in errors:
-        if error['code'] != 11000:
-            print(error)
-            print('Errors as above...')
+    """
+    Handle write errors
+    :param errors:
+    :return:
+    """
+    # To be implemented
+    pass
 
 
 class AddTablePipeline(object):
@@ -55,7 +56,6 @@ class AddTablePipeline(object):
         if not self.client:
             logging.error('No client available')
             return
-        print('Total Items Scraped: ', len(self.raw_data))
 
         try:
             self.items.create_index([('raw_note', pymongo.TEXT)], unique=True, background=True, sparse=True)
