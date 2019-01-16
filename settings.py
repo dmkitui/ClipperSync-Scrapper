@@ -11,11 +11,11 @@ SPIDER_SETTINGS = [
         'database': {
             'MONGO_URI': os.environ.get('MONGO_URI'),
             'MONGO_DB': os.environ.get('MONGO_DB'),
-            'COLLECTION_NAME': os.environ.get('COLLECTION_NAME')
+            'RAW_COLLECTION_NAME': os.environ.get('RAW_COLLECTION_NAME')
         },
         'scrapy_settings': {
             'ITEM_PIPELINES': {
-                'app.pipelines.AddTablePipeline': 500
+                'app.pipelines.ProcessRawItem': 500
             }
         }
     },
@@ -36,7 +36,7 @@ SPIDER_SETTINGS = [
         },
         'scrapy_settings': {
             'ITEM_PIPELINES': {
-                'app.pipelines.AddTablePipeline': 500
+                'app.pipelines.ProcessRawItem': 500
             }
         }
     }
