@@ -17,7 +17,7 @@
 #         },
 #         'scrapy_settings': {
 #             'ITEM_PIPELINES': {
-#                 'app.pipelines.AddTablePipeline': 500
+#                 'app.pipelines.ProcessRawItem': 500
 #             }
 #         }
 #     }

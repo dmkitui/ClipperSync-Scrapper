@@ -16,7 +16,7 @@ def write_error_handler(errors):
     pass
 
 
-class AddTablePipeline(object):
+class ProcessRawItem(object):
 
     def __init__(self, mongo_uri, mongo_db, collection_name):
         self.mongo_uri = mongo_uri
@@ -33,7 +33,7 @@ class AddTablePipeline(object):
         return cls(
             mongo_uri=db_settings['MONGO_URI'],
             mongo_db=db_settings['MONGO_DB'],
-            collection_name=db_settings['COLLECTION_NAME']
+            collection_name=db_settings['RAW_COLLECTION_NAME']
         )
 
     def open_spider(self, spider):
