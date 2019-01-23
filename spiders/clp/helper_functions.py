@@ -2,7 +2,7 @@ import pymongo
 from flask import current_app as app, jsonify
 
 
-def db_connection(spider_name):
+def db_connection(spider_name, data):
     db_settings = {}
     for spider in app.config['SPIDER_SETTINGS']:
         if spider_name == spider['endpoint']:
@@ -15,4 +15,7 @@ def db_connection(spider_name):
     client = pymongo.MongoClient(db_settings['MONGO_URI'])
     db = client[db_settings['MONGO_DB']]
 
-    return db[db_settings['COLLECTION_NAME']]
+    if data == 'items':
+        return db[db_settings['CLIPPER_ITEMS']]
+    elif data == 'stats':
+        return db['spider_stats']

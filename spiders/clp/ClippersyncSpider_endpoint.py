@@ -16,7 +16,13 @@ def fetch_data(spider_name, url='/<spider_name>/fetch-data', methods=['GET']):
     :param methods: GET.
     :return: all items
     """
-    items = db_connection(spider_name)
+    all_spider_stats = db_connection(spider_name, 'stats')
+
+    print('STATS: ', all_spider_stats.find_one())
+    stats = all_spider_stats.find_one()[spider_name]
+    print('STATS>>>>>>: ', stats)
+
+    items = db_connection(spider_name, 'items')
 
     if not isinstance(items, pymongo.collection.Collection):
         return items
@@ -42,12 +48,13 @@ def search(spider_name, url='/<spider_name>/search/', methods=['GET']):
 
     search_terms = request.args.get('q', '')
 
-    items = db_connection(spider_name)
+    items = db_connection(spider_name, 'items')
+    # items.create_index([('raw_note', pymongo.TEXT)], unique=True, background=True, sparse=True)
 
     if not isinstance(items, pymongo.collection.Collection):
         return items
 
-    cursor_object = items.find({'$text': {'$search': search_terms}}).sort('date')
+    cursor_object = items.find({'$text': {'$search': str(search_terms)}}).sort('date', pymongo.DESCENDING)
 
     results = []
     for result in cursor_object:
@@ -59,7 +66,7 @@ def search(spider_name, url='/<spider_name>/search/', methods=['GET']):
 
 def fetch_one(spider_name, item_id, url='/<spider_name>/fetch-one/<item_id>', methods=['GET']):
 
-    items = db_connection(spider_name)
+    items = db_connection(spider_name, 'data')
 
     if not isinstance(items, pymongo.collection.Collection):
         return items

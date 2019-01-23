@@ -3,6 +3,9 @@ from settings import SPIDER_SETTINGS
 from scrapy.exceptions import CloseSpider
 from scrapy.utils.markup import remove_tags, replace_entities
 from datetime import datetime
+from scrapy.spidermiddlewares.httperror import HttpError
+from twisted.internet.error import DNSLookupError
+from twisted.internet.error import TimeoutError, TCPTimedOutError
 
 BASE_URL = 'https://www.clippersync.com'
 
@@ -37,10 +40,31 @@ class ClippersyncSpider(scrapy.Spider):
                 'email': credentials['email'],
                 'password': credentials['password']
             },
-            callback=self.after_login
+            callback=self.after_login,
+            errback=self.error_function
         )
 
+    def error_function(self, failure):
+        # log all failures
+        self.logger.error(repr(failure))
+
+        if failure.check(HttpError):
+            # these exceptions come from HttpError spider middleware
+            # you can get the non-200 response
+            response = failure.value.response
+            self.logger.error('HttpError on {0}: Status {1}'.format(response.url, response.status))
+
+        elif failure.check(DNSLookupError):
+            # this is the original request
+            request = failure.request
+            self.logger.error('DNSLookupError on %s', request.url)
+
+        elif failure.check(TimeoutError, TCPTimedOutError):
+            request = failure.request
+            self.logger.error('TimeoutError on %s', request.url)
+
     def after_login(self, response):
+        print('RESPONSE YYYY: ', response)
         if 'Invalid username or password.' in str(response.body):
             raise CloseSpider('Invalid login credentials')
         if response.status != 200:
