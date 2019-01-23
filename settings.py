@@ -11,11 +11,12 @@ SPIDER_SETTINGS = [
         'database': {
             'MONGO_URI': os.environ.get('MONGO_URI'),
             'MONGO_DB': os.environ.get('MONGO_DB'),
-            'RAW_COLLECTION_NAME': os.environ.get('RAW_COLLECTION_NAME')
+            'RAW_COLLECTION_NAME': os.environ.get('RAW_COLLECTION_NAME'),
+            'CLIPPER_ITEMS': os.environ.get('CLIPPER_ITEMS')
         },
         'scrapy_settings': {
             'ITEM_PIPELINES': {
-                'app.pipelines.ProcessRawItem': 500
+                'app.pipelines.ProcessRawItem': 100
             }
         }
     },
