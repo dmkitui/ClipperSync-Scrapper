@@ -1,12 +1,7 @@
 import scrapy
-import hashlib
-from settings import SPIDER_SETTINGS
+from app.settings import SPIDER_SETTINGS
 from scrapy.exceptions import CloseSpider
 from scrapy.utils.markup import remove_tags, replace_entities
-from datetime import datetime
-from scrapy.spidermiddlewares.httperror import HttpError
-from twisted.internet.error import DNSLookupError
-from twisted.internet.error import TimeoutError, TCPTimedOutError
 
 BASE_URL = 'https://www.clippersync.com'
 
@@ -14,27 +9,20 @@ BASE_URL = 'https://www.clippersync.com'
 class ClipItem(scrapy.Item):
     date = scrapy.Field()
     raw_note = scrapy.Field()
-    md5 = scrapy.Field()
 
 
-class ClippersyncSpider(scrapy.Spider):
-
-    def __init__(self):
-        self.spider_settings = self.spider_details()
-        self.last_crawl = None
-
+class xyz(scrapy.Spider):
     @classmethod
     def spider_details(cls):
         for item in SPIDER_SETTINGS:
             if item['spider'] == cls.__name__:
                 return item
 
-    name = 'clippersync'
+    name = 'xyz'
     start_urls = [BASE_URL]
 
     def parse(self, response):
         credentials = self.spider_details()
-
         yield scrapy.FormRequest.from_response(
             response,
             formxpath='//*[@id="login"]/div/div/form',
@@ -42,41 +30,18 @@ class ClippersyncSpider(scrapy.Spider):
                 'email': credentials['email'],
                 'password': credentials['password']
             },
-            callback=self.after_login,
-            errback=self.error_function
+            callback=self.after_login
         )
 
-    def error_function(self, failure):
-        # log all failures
-        self.logger.error(repr(failure))
-
-        if failure.check(HttpError):
-            # these exceptions come from HttpError spider middleware
-            # you can get the non-200 response
-            response = failure.value.response
-            self.logger.error('HttpError on {0}: Status {1}'.format(response.url, response.status))
-
-        elif failure.check(DNSLookupError):
-            # this is the original request
-            request = failure.request
-            self.logger.error('DNSLookupError on %s', request.url)
-
-        elif failure.check(TimeoutError, TCPTimedOutError):
-            request = failure.request
-            self.logger.error('TimeoutError on %s', request.url)
-
     def after_login(self, response):
-        print('RESPONSE YYYY: ', response)
         if 'Invalid username or password.' in str(response.body):
             raise CloseSpider('Invalid login credentials')
         if response.status != 200:
             raise CloseSpider('Problem Fetching page, try again')
 
         clippings = response.selector.xpath('//*[@id="clippings"]/div[*]/div')
-
         for clip in clippings:
             time_stamp = clip.xpath('.//div[3]/span/text()').extract_first()
-
             note = clip.xpath('.//div[2]/a')
 
             if len(note) == 0:
@@ -91,9 +56,8 @@ class ClippersyncSpider(scrapy.Spider):
                 yield scrapy.Request(BASE_URL + note_url, callback=self.extended_notes, meta={'time_stamp': time_stamp})
             else:
                 item = ClipItem()
-                item['date'] = datetime.strptime(time_stamp, '%B %d, %Y (%H:%M %Z)')
+                item['date'] = time_stamp
                 item['raw_note'] = note_text
-                item['md5'] = hashlib.md5(note_text.encode('utf-8')).hexdigest()
                 yield item
 
     @staticmethod
@@ -105,8 +69,7 @@ class ClippersyncSpider(scrapy.Spider):
         note = replace_entities(note)
         note = note.strip('\n\t\t\t\t\t')
         item = ClipItem()
-        item['date'] = datetime.strptime(time_stamp, '%B %d, %Y (%H:%M %Z)')
+        item['date'] = time_stamp
         item['raw_note'] = note
-        item['md5'] = hashlib.md5(note.encode('utf-8')).hexdigest()
 
         yield item

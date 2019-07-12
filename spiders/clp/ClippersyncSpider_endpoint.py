@@ -18,16 +18,20 @@ def fetch_data(spider_name, url='/<spider_name>/fetch-data', methods=['GET']):
     """
     all_spider_stats = db_connection(spider_name, 'stats')
 
-    print('STATS: ', all_spider_stats.find_one())
-    stats = all_spider_stats.find_one()[spider_name]
-    print('STATS>>>>>>: ', stats)
+    spider_stats = None
+    for stat in all_spider_stats.find():
+        if stat['spider_name'] == spider_name:
+            spider_stats = stat['details']
+            break
+
+    print('Current Stats: ', spider_stats)
 
     items = db_connection(spider_name, 'items')
 
     if not isinstance(items, pymongo.collection.Collection):
         return items
 
-    cursor_object = items.find({}).sort('date', pymongo.DESCENDING)
+    cursor_object = items.find({}, {'md5': False}).sort('date', pymongo.DESCENDING)
 
     results = []
     for result in cursor_object:
@@ -54,7 +58,7 @@ def search(spider_name, url='/<spider_name>/search/', methods=['GET']):
     if not isinstance(items, pymongo.collection.Collection):
         return items
 
-    cursor_object = items.find({'$text': {'$search': str(search_terms)}}).sort('date', pymongo.DESCENDING)
+    cursor_object = items.find({'$text': {'$search': str(search_terms)}}, {'md5': False}).sort('date', pymongo.DESCENDING)
 
     results = []
     for result in cursor_object:

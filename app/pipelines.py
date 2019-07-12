@@ -59,8 +59,16 @@ class ProcessRawItem(object):
             logging.error('No items to process!')
             return
 
+        # for note in self.raw_data:
+        #     if note['raw_note'].startswith('On Friday evening'):
+        #         self.items.create_index([('raw_note', pymongo.ASCENDING)], unique=True, background=True, sparse=True)
+        #         self.items.insert_one(note)
+        #         print('XXXXXX: ', note)
+        #         return
+
         try:
-            self.items.create_index([('raw_note', pymongo.ASCENDING)], unique=True, background=True, sparse=True)
+            self.items.create_index([('raw_note', pymongo.TEXT)], background=True, sparse=True)
+            self.items.create_index([('md5', pymongo.ASCENDING)], unique=True, background=True, sparse=True)
             self.items.insert_many(self.raw_data, ordered=False)
         except pymongo.errors.BulkWriteError as e:
             write_error_handler(e.details['writeErrors'])
@@ -72,7 +80,8 @@ class ProcessRawItem(object):
         # TODO Implement time completed running from scrapy stats 'finish_time'
         last_run = self.stats.get_value('start_time')
         spider_stats = self.db['spider_stats']
-        spider_stats.insert({'FancySpider': {'last_run': last_run}})
+        # spider_stats.insert_one({spider.name: {'last_run': last_run}})
+        spider_stats.update_one({'spider_name': spider.name}, {"$set": {'details': {'last_run': last_run}}}, upsert=True)
 
         self.client.close()
 
